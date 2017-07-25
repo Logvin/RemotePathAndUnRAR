@@ -5,22 +5,22 @@
 #Change the below options to meatch your environment.
 
 #scriptPath represents the full path where this scrip (and logs) will be running from
-scriptPath="/home/deluge/scripts"
+scriptPath="/home/deluge/scripts/gittesting/RemotePathAndUnRAR"
 
 #pathToScan represents the folder that you want this script to scan, typically your torrent completed download directory
-pathToScan="/home/deluge/completed"
+pathToScan="/home/deluge/scripts/gittesting/completed"
 
 #fileTypes is the comma seperated list of file types you want to scan for.
 fileTypes="mkv,avi,mp4,rar"
 
 #finalDestination is the directory that you want Sonarr/Radarr to monitor, typically as a  "remote path".
-finalDestination="/home/deluge/sonarrcompleted"
+finalDestination="/home/deluge/scripts/gittesting/sonarrcompleted"
 
 #completedList is the running list of files that have been coppied by this script, to prevent re-copying.
-completedList="/home/deluge/scripts/completedList"
+completedList="/home/deluge/scripts/gittesting/RemotePathAndUnRAR/completedList"
 
 #completedListRAR is the same value, but specifically for RAR files, seperated for better visibility
-completedListRAR="/home/deluge/scripts/completedListRAR"
+completedListRAR="/home/deluge/scripts/gittesting/RemotePathAndUnRAR/completedListRAR"
 
 #chmodSwitch set to TRUE will execute the chmod command on all new created directories and files
 chmodSwitch="True"
@@ -91,7 +91,7 @@ moveFiles() {
 
 moveRAR() {
 	echo "Scanning for RAR Archive files..."
-	mapfile -t fileArrayTMP < <(find $pathToScan-type f | grep "rar")
+	mapfile -t fileArrayTMP < <(find $pathToScan -type f | grep "rar")
 	echo "${#fileArrayTMP[@]} RAR files found:"
 	for (( i=0; i<${#fileArrayTMP[@]}; i++ ));
 	do
