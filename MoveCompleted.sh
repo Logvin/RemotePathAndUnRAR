@@ -1,12 +1,14 @@
 #!/bin/bash
 
-#exec >> /home/deluge/scripts/MoveCompleted.log
-#exec 2>&1
+
 #Envronmental Variables
 #Change the below options to meatch your environment.
 
-#filePath represents the folder that you want this script to scan, typically your torrent completed download directory
-filePath="/home/deluge/completed"
+#scriptPath represents the full path where this scrip (and logs) will be running from
+scriptPath="/home/deluge/scripts"
+
+#pathToScan represents the folder that you want this script to scan, typically your torrent completed download directory
+pathToScan="/home/deluge/completed"
 
 #fileTypes is the comma seperated list of file types you want to scan for.
 fileTypes="mkv,avi,mp4,rar"
@@ -26,9 +28,13 @@ chmodSwitch="True"
 #chmodNumber will set the permission level for each new directory and folder
 chmodNumber="775"
 
+#The following two lines determine where your log file is output to
+#exec >> $scriptPath/MoveCompleted.log
+#exec 2>&1
+
 main() {
-	trap "rm -f /home/deluge/scripts/MoveCompleted.sh.lock" SIGINT SIGTERM
-	if [ -e /home/deluge/scripts/MoveCompleted.sh.lock ]
+	trap "rm -f $scriptPath/MoveCompleted.sh.lock" SIGINT SIGTERM
+	if [ -e $scriptPath/MoveCompleted.sh.lock ]
 	then
 		echo "MoveCompleted is already running."
 		exit 1
@@ -37,13 +43,13 @@ main() {
 		echo "*******************************"
 		dt=$(date '+%m/%d/%Y %H:%M:%S');
 		echo "$dt MoveCompleted is now running."
-		touch /home/deluge/scripts/MoveCompleted.sh.lock
+		touch $scriptPath/MoveCompleted.sh.lock
 		moveFiles
 		moveRAR
 		dt2=$(date '+%m/%d/%Y %H:%M:%S');
 		echo "$dt2 MoveCompleted is now finished."
 		echo "*******************************"
-		rm -f /home/deluge/scripts/MoveCompleted.sh.lock
+		rm -f $scriptPath/MoveCompleted.sh.lock
 		trap - SIGINT SIGTERM
 		exit 0
 	fi
@@ -54,7 +60,7 @@ moveFiles() {
 	#get the file type we are scanning for.
 	filetype="mkv"
 	echo "Scanning for $filetype files..."
-	mapfile -t fileArrayTMP < <(find $filePath -type f | grep $filetype | grep -v "sample")
+	mapfile -t fileArrayTMP < <(find $pathToScan -type f | grep $filetype | grep -v "sample")
 	echo "${#fileArrayTMP[@]} $filetype files found:"
 	for (( i=0; i<${#fileArrayTMP[@]}; i++ ));
 	do
@@ -85,7 +91,7 @@ moveFiles() {
 
 moveRAR() {
 	echo "Scanning for RAR Archive files..."
-	mapfile -t fileArrayTMP < <(find $filePath -type f | grep "rar")
+	mapfile -t fileArrayTMP < <(find $pathToScan-type f | grep "rar")
 	echo "${#fileArrayTMP[@]} RAR files found:"
 	for (( i=0; i<${#fileArrayTMP[@]}; i++ ));
 	do
